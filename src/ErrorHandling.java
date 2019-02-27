@@ -1,29 +1,35 @@
 import java.util.Scanner;
-
-
-class MinimumBalanceException extends Exception{
-    MinimumBalanceException()
-    {
-        System.out.println("Bank balance is less than minimum amount");
-    }
-}
-class MaximumTransactionsException extends Exception{
-    MaximumTransactionsException()
-    {
-        System.out.println("No of transactions per day exceeded");
-    }
-}
-class InvalidAccountNumberException extends Exception{
-    InvalidAccountNumberException()
-    {
-        System.out.println("Account number invalid");
-    }
-}
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class ErrorHandling{
-    static void verify(int bankbalance, int transactions, String accountnumber)throws MinimumBalanceException, MaximumTransactionsException, InvalidAccountNumberException
+    private static final Logger log = Logger.getLogger(ErrorHandling.class.getName());
+    public static void main(String args[])
     {
-        if(bankbalance<3000)
+        int bankBalance,transactions;
+        String accountNumber;
+        Scanner sc=new Scanner(System.in);
+        log.info("Enter balance,number of transactions,account number");
+        bankBalance=sc.nextInt();
+        transactions=sc.nextInt();
+        accountNumber=sc.next();
+        try
+        {
+            verifyBankDetails(bankBalance,transactions,accountNumber);
+        }
+        catch(MinimumBalanceException | MaximumTransactionsException | InvalidAccountNumberException s) {
+            log.info("Exception caught");
+        }
+        finally{
+            log.info("finally block is executed");
+        }
+    }
+    
+    static void verifyBankDetails(int bankBalance, int transactions, String accountNumber)throws MinimumBalanceException, MaximumTransactionsException, InvalidAccountNumberException
+    {
+        final String regex= "[0-9]{9,18}";
+
+        if(bankBalance<3000)
         {
 
             throw new MinimumBalanceException();
@@ -33,30 +39,36 @@ public class ErrorHandling{
 
             throw new MaximumTransactionsException();
         }
-        if(accountnumber.length()!=8)
+       if (!Pattern.matches(regex, accountNumber))
         {
 
             throw new InvalidAccountNumberException();
         }
 
     }
-    public static void main(String args[]){
-        int bal,tran;
-        String acc;
-        Scanner sc=new Scanner(System.in);
-        System.out.println("enter balance, number of transactions, account nuumber");
-        bal=sc.nextInt();
-        tran=sc.nextInt();
-        acc=sc.next();
-        try
-        {
-            verify(bal,tran,acc);
-        }
-        catch(MinimumBalanceException | MaximumTransactionsException | InvalidAccountNumberException s) {
-            System.out.println("Exception caught");
-        }
-        finally{
-            System.out.println("finally block is executed");
-        }
+}
+
+class MinimumBalanceException extends Exception{
+
+    private static final Logger log = Logger.getLogger(MinimumBalanceException.class.getName());
+    MinimumBalanceException()
+    {
+        log.info("Bank balance is less than minimum amount");
     }
 }
+
+class MaximumTransactionsException extends Exception{
+    private static final Logger log = Logger.getLogger(MaximumTransactionsException.class.getName());
+    MaximumTransactionsException()
+    {
+        log.info("No of transactions per day exceeded");
+    }
+}
+class InvalidAccountNumberException extends Exception{
+    private static final Logger log = Logger.getLogger(InvalidAccountNumberException.class.getName());
+    InvalidAccountNumberException()
+    {
+        log.info("Account number invalid");
+    }
+}
+
